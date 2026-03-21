@@ -1,3 +1,4 @@
+mod ansible_cmd;
 mod aws_cmd;
 mod binlog;
 mod cargo_cmd;
@@ -215,6 +216,14 @@ enum Commands {
     /// PostgreSQL client with compact output (strip borders, compress tables)
     Psql {
         /// psql arguments
+        #[arg(trailing_var_arg = true, allow_hyphen_values = true)]
+        args: Vec<String>,
+    },
+
+    /// Ansible playbook with compact task/recap output
+    #[command(name = "ansible-playbook")]
+    AnsiblePlaybook {
+        /// ansible-playbook arguments
         #[arg(trailing_var_arg = true, allow_hyphen_values = true)]
         args: Vec<String>,
     },
@@ -1479,6 +1488,10 @@ fn main() -> Result<()> {
             psql_cmd::run(&args, cli.verbose)?;
         }
 
+        Commands::AnsiblePlaybook { args } => {
+            ansible_cmd::run(&args, cli.verbose)?;
+        }
+
         Commands::Terraform { args } => {
             terraform_cmd::run(&args, cli.verbose)?;
         }
@@ -2241,6 +2254,7 @@ fn is_operational_command(cmd: &Commands) -> bool {
             | Commands::Smart { .. }
             | Commands::Git { .. }
             | Commands::Gh { .. }
+            | Commands::AnsiblePlaybook { .. }
             | Commands::Terraform { .. }
             | Commands::Nix { .. }
             | Commands::Pnpm { .. }
@@ -2480,6 +2494,20 @@ mod tests {
             match cli.command {
                 Commands::Gain { failures, .. } => assert!(failures),
                 _ => panic!("Expected Gain command"),
+            }
+        }
+    }
+
+    #[test]
+    fn test_ansible_playbook_subcommand_parses() {
+        let result = Cli::try_parse_from(["rtk", "ansible-playbook", "site.yml", "-i", "hosts"]);
+        assert!(result.is_ok());
+        if let Ok(cli) = result {
+            match cli.command {
+                Commands::AnsiblePlaybook { args } => {
+                    assert_eq!(args, vec!["site.yml", "-i", "hosts"]);
+                }
+                _ => panic!("Expected AnsiblePlaybook command"),
             }
         }
     }
