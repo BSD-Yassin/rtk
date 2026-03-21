@@ -1633,6 +1633,44 @@ mod tests {
         );
     }
 
+    #[test]
+    fn test_classify_terraform_apply() {
+        assert!(matches!(
+            classify_command("terraform apply -auto-approve"),
+            Classification::Supported {
+                rtk_equivalent: "rtk terraform",
+                ..
+            }
+        ));
+    }
+
+    #[test]
+    fn test_rewrite_terraform_apply() {
+        assert_eq!(
+            rewrite_command("terraform apply -auto-approve", &[]),
+            Some("rtk terraform apply -auto-approve".into())
+        );
+    }
+
+    #[test]
+    fn test_classify_nix_search() {
+        assert!(matches!(
+            classify_command("nix search nixpkgs hello"),
+            Classification::Supported {
+                rtk_equivalent: "rtk nix",
+                ..
+            }
+        ));
+    }
+
+    #[test]
+    fn test_rewrite_nix_search() {
+        assert_eq!(
+            rewrite_command("nix search nixpkgs hello", &[]),
+            Some("rtk nix search nixpkgs hello".into())
+        );
+    }
+
     // --- Python tooling ---
 
     #[test]

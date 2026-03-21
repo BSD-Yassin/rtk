@@ -37,6 +37,7 @@ mod log_cmd;
 mod ls;
 mod mypy_cmd;
 mod next_cmd;
+mod nix_cmd;
 mod npm_cmd;
 mod parser;
 mod pip_cmd;
@@ -54,6 +55,7 @@ mod session_cmd;
 mod summary;
 mod tee;
 mod telemetry;
+mod terraform_cmd;
 mod toml_filter;
 mod tracking;
 mod tree;
@@ -213,6 +215,20 @@ enum Commands {
     /// PostgreSQL client with compact output (strip borders, compress tables)
     Psql {
         /// psql arguments
+        #[arg(trailing_var_arg = true, allow_hyphen_values = true)]
+        args: Vec<String>,
+    },
+
+    /// Terraform CLI with compact output (drop refresh/progress noise)
+    Terraform {
+        /// Terraform arguments
+        #[arg(trailing_var_arg = true, allow_hyphen_values = true)]
+        args: Vec<String>,
+    },
+
+    /// Nix CLI with compact output (drop evaluation/progress noise)
+    Nix {
+        /// Nix arguments
         #[arg(trailing_var_arg = true, allow_hyphen_values = true)]
         args: Vec<String>,
     },
@@ -1463,6 +1479,14 @@ fn main() -> Result<()> {
             psql_cmd::run(&args, cli.verbose)?;
         }
 
+        Commands::Terraform { args } => {
+            terraform_cmd::run(&args, cli.verbose)?;
+        }
+
+        Commands::Nix { args } => {
+            nix_cmd::run(&args, cli.verbose)?;
+        }
+
         Commands::Pnpm { command } => match command {
             PnpmCommands::List { depth, args } => {
                 pnpm_cmd::run(pnpm_cmd::PnpmCommand::List { depth }, &args, cli.verbose)?;
@@ -2217,6 +2241,8 @@ fn is_operational_command(cmd: &Commands) -> bool {
             | Commands::Smart { .. }
             | Commands::Git { .. }
             | Commands::Gh { .. }
+            | Commands::Terraform { .. }
+            | Commands::Nix { .. }
             | Commands::Pnpm { .. }
             | Commands::Err { .. }
             | Commands::Test { .. }
