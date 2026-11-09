@@ -451,7 +451,7 @@ pub const RULES: &[RtkRule] = &[
         ..RtkRule::DEFAULT
     },
     RtkRule {
-        pattern: r"^docker\s+(ps|images|logs|run|exec|build|compose\s+(ps|logs|build))(?:\s|$|[;|&()<>])",
+        pattern: r"^docker\s+(ps|images|logs|run|exec|build|compose\s+(ps|logs|build|exec))(?:\s|$|[;|&()<>])",
         rtk_cmd: "rtk docker",
         rewrite_prefixes: &["docker"],
         category: "Infra",
@@ -459,7 +459,7 @@ pub const RULES: &[RtkRule] = &[
         ..RtkRule::DEFAULT
     },
     RtkRule {
-        pattern: r"^kubectl\s+(get|logs|describe|apply)(?:\s|$|[;|&()<>])",
+        pattern: r"^kubectl\s+(get|logs|describe|apply|exec)(?:\s|$|[;|&()<>])",
         rtk_cmd: "rtk kubectl",
         rewrite_prefixes: &["kubectl"],
         category: "Infra",
@@ -467,11 +467,43 @@ pub const RULES: &[RtkRule] = &[
         ..RtkRule::DEFAULT
     },
     RtkRule {
-        pattern: r"^oc\s+(get|logs|describe|apply|status|adm)(?:\s|$|[;|&()<>])",
+        pattern: r"^oc\s+(get|logs|describe|apply|status|adm|exec)(?:\s|$|[;|&()<>])",
         rtk_cmd: "rtk oc",
         rewrite_prefixes: &["oc"],
         category: "Infra",
         savings_pct: 85.0,
+        ..RtkRule::DEFAULT
+    },
+    RtkRule {
+        pattern: r"^podman\s+exec(?:\s|$|[;|&()<>])",
+        rtk_cmd: "rtk podman",
+        rewrite_prefixes: &["podman"],
+        category: "Infra",
+        savings_pct: 70.0,
+        ..RtkRule::DEFAULT
+    },
+    RtkRule {
+        pattern: r"^nix\s+(?:--?\S+\s+)*(?:shell|develop|run)\b.*(?:\s-c(?:\s|$)|\s--command(?:\s|$))",
+        rtk_cmd: "rtk nix",
+        rewrite_prefixes: &["nix"],
+        category: "Infra",
+        savings_pct: 70.0,
+        ..RtkRule::DEFAULT
+    },
+    RtkRule {
+        pattern: r"^nix\s+(?:--?\S+\s+)*run\b.*\s--\s",
+        rtk_cmd: "rtk nix",
+        rewrite_prefixes: &["nix"],
+        category: "Infra",
+        savings_pct: 70.0,
+        ..RtkRule::DEFAULT
+    },
+    RtkRule {
+        pattern: r"^ansible(?:\s|$)",
+        rtk_cmd: "rtk ansible",
+        rewrite_prefixes: &["ansible"],
+        category: "Infra",
+        savings_pct: 70.0,
         ..RtkRule::DEFAULT
     },
     RtkRule {

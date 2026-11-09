@@ -698,7 +698,7 @@ fn compact_ports(ports: &str) -> String {
 }
 
 pub fn run_docker_passthrough(args: &[OsString], verbose: u8) -> Result<i32> {
-    crate::core::runner::run_passthrough("docker", args, verbose)
+    crate::cmds::system::exec_boundary::run_or_passthrough("docker", args, verbose)
 }
 
 /// Run `docker compose ps` (or `docker compose ps -a`) with compact output
@@ -798,7 +798,7 @@ pub fn run_compose_build(service: Option<&str>, verbose: u8) -> Result<i32> {
 pub fn run_compose_passthrough(args: &[OsString], verbose: u8) -> Result<i32> {
     let mut combined = vec![OsString::from("compose")];
     combined.extend_from_slice(args);
-    crate::core::runner::run_passthrough("docker", &combined, verbose)
+    crate::cmds::system::exec_boundary::run_or_passthrough("docker", &combined, verbose)
 }
 
 pub fn run_kubectl_get(args: &[String], verbose: u8) -> Result<i32> {
@@ -843,7 +843,7 @@ fn k8s_get_requests_raw_output(args: &[String]) -> bool {
 }
 
 pub fn run_kubectl_passthrough(args: &[OsString], verbose: u8) -> Result<i32> {
-    crate::core::runner::run_passthrough("kubectl", args, verbose)
+    crate::cmds::system::exec_boundary::run_or_passthrough("kubectl", args, verbose)
 }
 
 pub fn run_oc_get(args: &[String], verbose: u8) -> Result<i32> {
@@ -851,7 +851,7 @@ pub fn run_oc_get(args: &[String], verbose: u8) -> Result<i32> {
 }
 
 pub fn run_oc_passthrough(args: &[OsString], verbose: u8) -> Result<i32> {
-    crate::core::runner::run_passthrough("oc", args, verbose)
+    crate::cmds::system::exec_boundary::run_or_passthrough("oc", args, verbose)
 }
 
 #[cfg(test)]

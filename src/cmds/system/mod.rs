@@ -3,6 +3,7 @@ pub mod constants;
 pub mod ctest_cmd;
 pub mod deps;
 pub mod env_cmd;
+pub mod exec_boundary;
 pub mod find_cmd;
 pub mod format_cmd;
 pub mod json_cmd;

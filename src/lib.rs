@@ -1962,6 +1962,12 @@ fn run_fallback(parse_error: clap::Error) -> Result<i32> {
         return llm_proxy::run_agent(agent, &args[1..]);
     }
 
+    // Exec boundaries filter the inner command's stdout. Unparsed
+    // invocations keep the TOML filter or the streaming passthrough.
+    if let Some(code) = cmds::system::exec_boundary::run_if_boundary(&args)? {
+        return Ok(code);
+    }
+
     let raw_command = args.join(" ");
     let tracked_command = core::shell::display_command(&args);
     let error_message = core::utils::strip_ansi(&parse_error.to_string());
